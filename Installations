@@ -1,0 +1,21 @@
+### Installations needed for milestone 0
+
+If node.js is not installed 
+Install from  https://nodejs.org/en/download/source-code 
+(check compatinbility mac m1.m2 or intel chip / windows)
+
+npm install innit -y
+npm install express mongoose body-parser ejs
+npm install nodemon 
+npm install
+
+MongoShell 
+
+Install from 
+https://downloads.mongodb.com/compass/mongosh-2.3.2-darwin-arm64.zip
+(check compatinbility mac m1.m2 or intel chip / windows)
+
+To install Git
+sudo port install git
+
+*If u have any problem installing anything try typing sudo before the command ""sudo npm install nodemon"" *
