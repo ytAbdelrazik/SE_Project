@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -12,10 +13,6 @@ mongoose.connect(dbURI)
     .then(() => console.log('MongoDB connected successfully'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-app.use((req, res, next) => {
-    console.log('The middleware received the request:', req.method, req.url);
-    next();
-});
 app.use(express.json());
 
 // Define the Student model with ID correctly typed
@@ -31,7 +28,22 @@ const Student = mongoose.model('Student', studentSchema);
 
 module.exports = Student; 
 
-// Delete student endpoint
+app.post('/newstudent', (req, res) => {
+    try{
+    const {Username,Email,Age,ID}=req.body;
+    const new_student = new Student({Username,Email,Age,ID});
+    new_student.save();
+    res.status(201).json({
+        message: 'Student created successfully!',
+        student:new_student
+    });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error creating student', error });
+    }
+    
+});
+
 app.delete('/students/delete', async (req, res) => {
     const { ID } = req.body; 
     if (!ID) {
@@ -52,3 +64,4 @@ app.delete('/students/delete', async (req, res) => {
 // Server port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
