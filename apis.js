@@ -27,10 +27,10 @@ const Student = mongoose.model('Student', studentSchema);
 
 module.exports = Student; 
 
-app.post('/students', (req, res) => {
+app.post('/newstudent', (req, res) => {
     try{
-    const {Username,Email,Age}=req.body;
-    const new_student = new Student({Username,Email,Age});
+    const {Username,Email,Age,ID}=req.body;
+    const new_student = new Student({Username,Email,Age,ID});
     new_student.save();
     res.status(201).json({
         message: 'Student created successfully!',
@@ -42,23 +42,6 @@ app.post('/students', (req, res) => {
     }
     
 });
- app.get('/students', async(req,res)=>{ 
-    try{
-        const all = await Student.find()
-        res.status(200).json(all)
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Error getting student', error });
-    }
-});
-
-
-
-
-
-
-
-
 
 // Server port
 const PORT = process.env.PORT || 3001;
