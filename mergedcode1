@@ -27,7 +27,7 @@ const studentSchema = new mongoose.Schema({
 const Student = mongoose.model('Student', studentSchema);
 
 module.exports = Student; 
-
+//youssef
 app.post('/newstudent', (req, res) => {
     try{
     const {Username,Email,Age,ID}=req.body;
@@ -43,7 +43,7 @@ app.post('/newstudent', (req, res) => {
     }
     
 });
-
+//ahmed
 app.delete('/students/delete', async (req, res) => {
     const { ID } = req.body; 
     if (!ID) {
@@ -60,6 +60,26 @@ app.delete('/students/delete', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+//hamza
+app.get('/students', async (req, res) => {
+  try {
+    const students = await Student.find().limit(10).sort({ Username: 1 }); // Changed 'Username' to 'username' to match the schema
+    console.log('Fetched students:', students); // Debugging
+    res.status(200).json(students);
+  } catch (err) {
+    console.error('Error fetching students:', err); // Debugging
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+
+
+
+
+
 
 // Server port
 const PORT = process.env.PORT || 3000;
