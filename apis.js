@@ -12,6 +12,10 @@ mongoose.connect(dbURI)
     .then(() => console.log('MongoDB connected successfully'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+app.use((req, res, next) => {
+    console.log('The middleware received the request:', req.method, req.url);
+    next();
+});
 app.use(express.json());
 
 // Define the Student model with ID correctly typed
