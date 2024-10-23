@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -43,6 +44,24 @@ app.post('/newstudent', (req, res) => {
     
 });
 
+app.delete('/students/delete', async (req, res) => {
+    const { ID } = req.body; 
+    if (!ID) {
+        return res.status(400).json({ message: "Student ID must be provided" });
+    }
+
+    try {
+        const result = await Student.deleteOne({ ID });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No student found with that ID" });
+        }
+        res.status(200).json({ message: "Student deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Server port
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
