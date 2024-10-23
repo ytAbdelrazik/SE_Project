@@ -4,7 +4,7 @@
   "description": "A simple Node.js project.",
   "main": "apis.js",
   "scripts": {
-    "start": "node apis.js"
+    "start": "nodemon apis.js"
   },
   "author": "Ahmed",
   "license": "ISC",
