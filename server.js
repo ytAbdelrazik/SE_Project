@@ -12,6 +12,8 @@ mongoose.connect(dbURI)
     .then(() => console.log('MongoDB connected successfully'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+
+
 app.use((req, res, next) => {
     console.log('The middleware received the request:', req.method, req.url);
     next();
@@ -28,22 +30,21 @@ const studentSchema = new mongoose.Schema({
 
 // Create the model from the schema
 const Student = mongoose.model('Student', studentSchema);
-
 module.exports = Student; 
 
-app.get('/students/search', async (req, res) => {
-    const { Username } = req.body; // Get the name from query parameters
-    if (!Username) {
-        return res.status(400).json({ message: "Name parameter is required" });
+// Delete student endpoint
+app.delete('/students/deletee', async (req, res) => {
+    const { ID } = req.body; 
+    if (!ID) {
+        return res.status(400).json({ message: "Student ID must be provided" });
     }
 
     try {
-        // Use a case-insensitive search to find students by name
-        const students = await Student.find({ Username: new RegExp(Username, 'i') });
-        if (students.length === 0) {
-            return res.status(404).json({ message: "No students found with that name" });
+        const result = await Student.deleteOne({ ID });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No student found with that ID" });
         }
-        res.json(students); // Send the found students back to the client
+        res.status(200).json({ message: "Student deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
