@@ -1,5 +1,6 @@
 
 
+
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -131,8 +132,23 @@ app.get('/students/search', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+//--------------------------------------------------
+app.get('/students', async (req, res) => {
+  try {
+    const students = await Student.find().limit(10).sort({ Username: 1 }); // Changed 'Username' to 'username' to match the schema
+    console.log('Fetched students:', students); // Debugging
+    res.status(200).json(students);
+  } catch (err) {
+    console.error('Error fetching students:', err); // Debugging
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 // Server port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 
