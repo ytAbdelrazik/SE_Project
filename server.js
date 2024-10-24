@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
 
+
 // MongoDB URI
 const dbURI = 'mongodb+srv://ashrafahmed2006:dsberlin@cluster0.rfhbl.mongodb.net/Students';
 
