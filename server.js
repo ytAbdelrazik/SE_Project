@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
@@ -19,6 +20,9 @@ const studentSchema = new mongoose.Schema({
 // Schema
 const Student = mongoose.model('Students', studentSchema);
 //_________________--------------------------____________________-----------------------
+
+
+//"mahmoud"
 // Route to get all students
 app.get('/students', async (req, res) => {
     try {
@@ -29,6 +33,8 @@ app.get('/students', async (req, res) => {
     }
 });
 //-------------------------------------------------------------------------------
+
+//OG
 // Delete student endpoint
 app.delete('/students/deleteByName', async (req, res) => {
     const { Username } = req.body;
@@ -47,6 +53,8 @@ app.delete('/students/deleteByName', async (req, res) => {
     }
 });
      //-------------------------------------------------------------------------------
+
+//"yt"
 app.patch('/UpdateNameByID', async (req, res) => {
     const studentId = parseInt(req.query.id.trim()); //parse to INT
     const newName = req.body.username; // get name from postman body
@@ -69,6 +77,8 @@ app.patch('/UpdateNameByID', async (req, res) => {
     }
 });
 //---------------------------------------------------------------
+
+//"ahmed"
 // Delete student endpoint
 app.delete('/students/deletee', async (req, res) => {
     const { ID } = req.body; 
@@ -86,6 +96,9 @@ app.delete('/students/deletee', async (req, res) => {
     }
 });
 //--------------------------------------------------------
+
+
+//"yassin"
 app.get('/students/search', async (req, res) => {
     const { Username } = req.body; // Get the name from query parameters
     if (!Username) {
@@ -103,6 +116,8 @@ app.get('/students/search', async (req, res) => {
     }
 });
 //--------------------------------------------------
+
+//"hamza"
 app.get('/students', async (req, res) => {
   try {
     const students = await Student.find().limit(10).sort({ Username: 1 }); // Changed 'Username' to 'username' to match the schema
@@ -110,12 +125,15 @@ app.get('/students', async (req, res) => {
     res.status(200).json(students);
   } catch (err) {
     console.error('Error fetching students:', err); // Debugging
+
     res.status(500).json({ message: err.message });
   }
 });
 
 
+
 //----------------------------------------------------
+"youssef ghoraba"
 app.post('/students', (req, res) => {
     try{
     const {Username,Email,Age}=req.body;
@@ -131,6 +149,19 @@ app.post('/students', (req, res) => {
     }
     
 });
+
+
+//--------------------------------------
+//Search student by id "Roaa"
+app.get('/students/:id', async (req, res) => {
+  try {
+    const student = await Student.findOne({ ID: req.params.id });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.status(200).json(student);
+  } catch (err) {
+    console.error('Error fetching student:', err);
 
 
 // Server port
