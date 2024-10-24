@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -14,6 +15,7 @@ mongoose.connect(dbURI)
 
 app.use(express.json());
 
+
 // Student model
 const studentSchema = new mongoose.Schema({
     Username: String,
@@ -25,6 +27,7 @@ const studentSchema = new mongoose.Schema({
 // Schema
 const Student = mongoose.model('Students', studentSchema);
 
+//_________________--------------------------____________________-----------------------
 // Route to get all students
 app.get('/students', async (req, res) => {
     try {
@@ -34,7 +37,35 @@ app.get('/students', async (req, res) => {
         res.status(500).json({ message: "Error retrieving students", error: err.message });
     }
 });
-////git add server.js
+//-------------------------------------------------------------------------------
+app.patch('/UpdateNameByID', async (req, res) => {
+    const studentId = parseInt(req.query.id.trim()); //parse to INT
+    const newName = req.body.username; // get name from postman body
+
+    try {
+        const updatedStudent = await Student.findOneAndUpdate(
+            { ID: studentId }, // find the student by ID
+            { $set: { Username: newName } }, // update the Username 
+            { new: true } // return the updated document
+        );
+
+        if (updatedStudent.Username==newName) {
+            res.status(200).json({ message: "Updated Student", student: updatedStudent }); // updated student
+        } else  if(updatedStudent.Username!=newName) {
+            res.status(404).json({ message: "name was not updated" }); // update failed
+        }
+         else{
+            res.status(404).json({ message: "Student not found" }); //  student is not found
+         }
+    } catch (err) {
+        res.status(500).json({ message: "Error updating student", error: err.message }); // errors
+    }
+});
+
 // Server port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
