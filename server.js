@@ -15,21 +15,29 @@ mongoose.connect(dbURI)
 
 app.use(express.json());
 
-//Student model
+
+// Student model
 const studentSchema = new mongoose.Schema({
     Username: String,
     Email: String,
-    Age: Number,  
-    ID: Number    
+    Age: Number,
+    ID: Number
 });
 
-//schema
-//
+// Schema
 const Student = mongoose.model('Students', studentSchema);
 
-module.exports = Student; 
-
-
+//_________________--------------------------____________________-----------------------
+// Route to get all students
+app.get('/students', async (req, res) => {
+    try {
+        const students = await Student.find(); // Retrieve all students
+        res.status(200).json(students); // Send the list of students as a response
+    } catch (err) {
+        res.status(500).json({ message: "Error retrieving students", error: err.message });
+    }
+});
+//-------------------------------------------------------------------------------
 app.patch('/UpdateNameByID', async (req, res) => {
     const studentId = parseInt(req.query.id.trim()); //parse to INT
     const newName = req.body.username; // get name from postman body
@@ -57,6 +65,7 @@ app.patch('/UpdateNameByID', async (req, res) => {
 // Server port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 
 
