@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
 
+
 // MongoDB URI
 const dbURI = 'mongodb+srv://ytdbse:ytdbse123@cluster0.rfhbl.mongodb.net/Students';
 
@@ -109,8 +110,29 @@ app.delete('/students/deletee', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+
+
+//--------------------------------------------------------
+app.get('/students/search', async (req, res) => {
+    const { Username } = req.body; // Get the name from query parameters
+    if (!Username) {
+        return res.status(400).json({ message: "Name parameter is required" });
+    }
+
+    try {
+        // Use a case-insensitive search to find students by name
+        const students = await Student.find({ Username: new RegExp(Username, 'i') });
+        if (students.length === 0) {
+            return res.status(404).json({ message: "No students found with that name" });
+        }
+        res.json(students); // Send the found students back to the client
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 // Server port
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
