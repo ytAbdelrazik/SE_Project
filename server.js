@@ -1,54 +1,139 @@
-// Import required modules
+
+
+
 const express = require('express');
 const mongoose = require('mongoose');
 
-
-// Initialize Express app
 const app = express();
-
-// Middleware to parse JSON
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://hamza:fo2sheldoksh@cluster0.rfhbl.mongodb.net/Students', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB...', err));
 
-// Define student schema
+// MongoDB URI
+const dbURI = 'mongodb+srv://ytdbse:ytdbse123@cluster0.rfhbl.mongodb.net/Students';
+
+// Connect to MongoDB using Mongoose
+mongoose.connect(dbURI)
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
+app.use(express.json());
+
+
+// Student model
 const studentSchema = new mongoose.Schema({
-  email: { type: String, required: true },
-  id: { type: Number, required: true },
-  age: { type: Number, required: true },
-  username: { type: String, required: true },
+    Username: String,
+    Email: String,
+    Age: Number,
+    ID: Number
 });
 
-// Create Student model
+
+
+// Schema
 const Student = mongoose.model('Students', studentSchema);
-app.get('/', (req, res) => {
-    res.send('API is working!');
-  });
-// Route to get the first 10 students sorted by username
-// Route to add a new student for testing
-app.post('/students/add', async (req, res) => {
-    const newStudent = new Student({
-      email: 'example@example.com',
-      id: 1,  // Assuming this is a number
-      age: 20,
-      username: 'testuser'
-    });
-  
+
+//_________________--------------------------____________________-----------------------
+
+
+
+
+// Route to get all students
+app.get('/students', async (req, res) => {
     try {
-      const savedStudent = await newStudent.save();
-      res.status(201).json(savedStudent);
+        const students = await Student.find(); // Retrieve all students
+        res.status(200).json(students); // Send the list of students as a response
     } catch (err) {
-      console.error('Error saving student:', err);
-      res.status(500).json({ message: err.message });
+        res.status(500).json({ message: "Error retrieving students", error: err.message });
+
     }
-  });
-  
+});
+//-------------------------------------------------------------------------------
+
+// Delete student endpoint
+app.delete('/students/deleteByName', async (req, res) => {
+    const { Username } = req.body;
+    if (!Username) {
+        return res.status(400).json({ message: "Username must be provided" });
+    } 
+
+    try {
+        // Delete all students where the Username matches exactly
+        const result = await Student.deleteMany({ Username });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No students found with that Username" });
+        }
+        res.json({ message: "Students deleted successfully", deletedCount: result.deletedCount });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+     //-------------------------------------------------------------------------------
+app.patch('/UpdateNameByID', async (req, res) => {
+    const studentId = parseInt(req.query.id.trim()); //parse to INT
+    const newName = req.body.username; // get name from postman body
+
+    try {
+        const updatedStudent = await Student.findOneAndUpdate(
+            { ID: studentId }, // find the student by ID
+            { $set: { Username: newName } }, // update the Username 
+            { new: true } // return the updated document
+        );
+
+        if (updatedStudent.Username==newName) {
+            res.status(200).json({ message: "Updated Student", student: updatedStudent }); // updated student
+        } else  if(updatedStudent.Username!=newName) {
+            res.status(404).json({ message: "name was not updated" }); // update failed
+        }
+         else{
+            res.status(404).json({ message: "Student not found" }); //  student is not found
+         }
+    } catch (err) {
+        res.status(500).json({ message: "Error updating student", error: err.message }); // errors
+
+    }
+});
+//---------------------------------------------------------------
+// Delete student endpoint
+app.delete('/students/deletee', async (req, res) => {
+    const { ID } = req.body; 
+    if (!ID) {
+        return res.status(400).json({ message: "Student ID must be provided" });
+    }
+
+    try {
+        const result = await Student.deleteOne({ ID });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No student found with that ID" });
+        }
+        res.status(200).json({ message: "Student deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+
+//--------------------------------------------------------
+app.get('/students/search', async (req, res) => {
+    const { Username } = req.body; // Get the name from query parameters
+    if (!Username) {
+        return res.status(400).json({ message: "Name parameter is required" });
+    }
+
+    try {
+        // Use a case-insensitive search to find students by name
+        const students = await Student.find({ Username: new RegExp(Username, 'i') });
+        if (students.length === 0) {
+            return res.status(404).json({ message: "No students found with that name" });
+        }
+        res.json(students); // Send the found students back to the client
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+//--------------------------------------------------
 app.get('/students', async (req, res) => {
   try {
     const students = await Student.find().limit(10).sort({ Username: 1 }); // Changed 'Username' to 'username' to match the schema
@@ -60,8 +145,10 @@ app.get('/students', async (req, res) => {
   }
 });
 
-// Start the server
+
+// Server port
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
